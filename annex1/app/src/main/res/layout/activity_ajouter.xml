@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AfficherActivity">
+    tools:context=".activity_ajouter">
 
     <TextView
         android:id="@+id/textAjouter"
@@ -18,6 +18,5 @@
         android:id="@+id/ajouterPage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ajouter"
-        app:iconTint="#2196F3" />
+        android:text="Ajouter" />
 </LinearLayout>

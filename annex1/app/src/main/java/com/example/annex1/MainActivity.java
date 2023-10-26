@@ -1,18 +1,19 @@
 package com.example.annex1;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 public class MainActivity extends AppCompatActivity {
-        Button ajouter;
-        Button afficher;
-        Button quitter;
-        Ecouteur ec;
+
+    Button ajouter;
+    Button afficher;
+    Button quitter;
+    Ecouteur ec;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,19 +35,18 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (v == ajouter){
-                Intent i = new Intent(MainActivity.this, AjouterActivity.class);
+                Intent i = new Intent(MainActivity.this, activity_ajouter.class);
                 startActivity(i);
                 System.out.println("print");
             }else if (v == afficher){
-                Intent i = new Intent(MainActivity.this,AfficherActivity.class);
+                Intent i = new Intent(MainActivity.this,afficherActivity.class);
                 startActivity(i);
             }else if(v == quitter){
-               finish();
+                finish();
             }
 
         }
 
 
     }
-
 }
