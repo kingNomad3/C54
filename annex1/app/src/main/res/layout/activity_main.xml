@@ -21,7 +21,8 @@
     <Button
         android:id="@+id/ajouter"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="ajouter" />
 
     <Button
         android:id="@+id/afficher"

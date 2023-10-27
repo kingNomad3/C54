@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 
-public class afficherActivity extends AppCompatActivity {
+public class AfficherActivity extends AppCompatActivity {
 
 //    GestionBD bd;
     ListView ajouterPage;

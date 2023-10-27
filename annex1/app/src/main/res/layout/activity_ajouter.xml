@@ -7,12 +7,13 @@
     android:orientation="vertical"
     tools:context=".activity_ajouter">
 
-    <TextView
+    <EditText
         android:id="@+id/textAjouter"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:gravity="center"
-        android:text="TextView" />
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Ajouter une note" />
 
     <Button
         android:id="@+id/ajouterPage"

@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ec = new Ecouteur();
+
         ajouter = findViewById(R.id.ajouter);
         afficher =findViewById(R.id.afficher);
         quitter = findViewById(R.id.quitter);
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
         ajouter.setOnClickListener(ec);
         afficher.setOnClickListener(ec);
         quitter.setOnClickListener(ec);
+
+
 
     }
 
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
                 System.out.println("print");
             }else if (v == afficher){
-                Intent i = new Intent(MainActivity.this,afficherActivity.class);
+                Intent i = new Intent(MainActivity.this,AfficherActivity.class);
                 startActivity(i);
             }else if(v == quitter){
                 finish();
