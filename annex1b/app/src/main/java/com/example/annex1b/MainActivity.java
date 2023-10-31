@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
         TextView qa, qb,qc,qd;
@@ -54,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             if (v == buttonA){
+                questionA();
+                questionB();
+//                questionC();
+//                questionD();
             }
 
         }
@@ -61,34 +66,115 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public int questionA(){
-        String fileName = "files.txt";
-        int nbligne =0;
+    public long questionA(){
+        String fileName = "file.txt";
+        long nbligne =0;
+
+        try {
+            FileInputStream fis = openFileInput(fileName);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            String line = br.readLine();
+            while (line != null){
+                nbligne++;
+                line = br.readLine();
+            }
+            qa.setText(String.valueOf(nbligne));
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return nbligne;
+    }
+
+    public long questionB(){
+        String fileName = "file.txt";
+        long caractere =0;
+        try {
+            FileInputStream fis = openFileInput(fileName);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            String line = br.readLine();
+
+            while (line != null){
+                caractere+= br.readLine().length();
+                line = br.readLine();
+            }
+            qb.setText(String.valueOf(caractere));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return caractere;
+    }
+
+
+    public void questionC(){
+
+        String nom = "Benjamin Joinvil";
+        BufferedWriter  bw = null;
+
+        try {
+            FileOutputStream fos = openFileOutput("file.txt", Context.MODE_APPEND);
+            OutputStreamWriter osw = new OutputStreamWriter(fos);
+            bw = new BufferedWriter(osw);// tjrs utiliser car plus efficace
+            bw.newLine();
+            bw.write(nom);
+
+
+        } catch (IOException fnfe) {
+            fnfe.printStackTrace();
+        }
+
+    }
+    public long questionD(){
+        String fileName = "file.txt";
+        long caractere =0;
+        int c; // retourne est le caractere unicode du caractere lu
 
 
         try {
             FileInputStream fis = openFileInput(fileName);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader br = new BufferedReader(isr);
-
             String line = br.readLine();
+
+
             while (line != null){
-
-                line = br.readLine();
-
+                c = br.read();
+                if ((char) c == 'c'){
+                    caractere++;
+                    line = br.readLine();
+                }
             }
-
-
+            qd.setText(String.valueOf(caractere));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return caractere;
+    }
+    public int nbMotScanner(){
+        String fileName = "file.txt";
+        Scanner sc = null;
+        int compteur = 0;
 
-        return nbligne;
+        //Le delimiteur par defaut est un caractere blanc ( espace,\r ,\n etc)
+        sc.useDelimiter("\\d"); // changer le delimiteur
+        try {
+            FileInputStream fis = openFileInput(fileName);
+            sc = new Scanner(fis);
 
+            while (sc.hasNext()){
+                compteur++;
+            }
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+            return compteur;
 
     }
-
-
 
 
 
