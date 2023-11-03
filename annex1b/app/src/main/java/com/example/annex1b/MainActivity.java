@@ -23,7 +23,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class MainActivity extends AppCompatActivity {
+public class                                                   MainActivity extends AppCompatActivity {
         TextView qa, qb,qc,qd;
         Button buttonA;
         Ecouteur ec;
@@ -57,8 +57,9 @@ public class MainActivity extends AppCompatActivity {
             if (v == buttonA){
                 questionA();
                 questionB();
-//                questionC();
-//                questionD();
+                questionC();
+                questionD();
+                nbMotScanner();
             }
 
         }
@@ -67,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public long questionA(){
+//        A)	Une méthode retournant le nombre de lignes que compte votre fichier texte
         String fileName = "file.txt";
         long nbligne =0;
-
         try {
             FileInputStream fis = openFileInput(fileName);
             InputStreamReader isr = new InputStreamReader(fis);
@@ -80,8 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 line = br.readLine();
             }
             qa.setText(String.valueOf(nbligne));
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,17 +88,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public long questionB(){
+//        B)	Une méthode retournant le nombre de caractères que compte votre fichier texteB)	Une méthode retournant le nombre de caractères que compte votre fichier texte
         String fileName = "file.txt";
         long caractere =0;
         try {
             FileInputStream fis = openFileInput(fileName);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader br = new BufferedReader(isr);
-            String line = br.readLine();
+            String line;
 
-            while (line != null){
-                caractere+= br.readLine().length();
-                line = br.readLine();
+            while ((line = br.readLine()) != null){
+                caractere += line.length();
             }
             qb.setText(String.valueOf(caractere));
         } catch (IOException e) {
@@ -109,25 +108,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void questionC(){
 
-        String nom = "Benjamin Joinvil";
-        BufferedWriter  bw = null;
-
-        try {
-            FileOutputStream fos = openFileOutput("file.txt", Context.MODE_APPEND);
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            bw = new BufferedWriter(osw);// tjrs utiliser car plus efficace
-            bw.newLine();
-            bw.write(nom);
-
-
-        } catch (IOException fnfe) {
-            fnfe.printStackTrace();
-        }
-
-    }
-    public long questionD(){
+    public long questionC(){
+//    C)	Une méthode retournant le nombre de « c » que comprend votre fichier texte
         String fileName = "file.txt";
         long caractere =0;
         int c; // retourne est le caractere unicode du caractere lu
@@ -137,45 +120,73 @@ public class MainActivity extends AppCompatActivity {
             FileInputStream fis = openFileInput(fileName);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader br = new BufferedReader(isr);
-            String line = br.readLine();
 
 
-            while (line != null){
-                c = br.read();
-                if ((char) c == 'c'){
-                    caractere++;
-                    line = br.readLine();
+            while ((c = br.read()) != -1) { // Lire les caractères jusqu'à la fin du fichier (EOF)
+                if ((char) c == 'c') { // Vérifier si le caractère est 'c'
+                    caractere++; // Incrémenter le compteur si c'est 'c'
                 }
             }
-            qd.setText(String.valueOf(caractere));
+
+            // Supposons que qd est un composant d'interface utilisateur (TextView) qui doit être mis à jour dans le thread UI.
+            qc.setText(String.valueOf(caractere));
+
+
         } catch (IOException e) {
             e.printStackTrace();
+            // Gérer l'exception, éventuellement informer l'utilisateur
         }
-        return caractere;
+        return caractere; // Retourner le compte de 'c'
+    }
+
+
+    public void questionD(){
+
+        String nom = "Benjamin Joinvil";
+        try {
+            FileOutputStream fos = openFileOutput("file.txt", Context.MODE_APPEND);
+            OutputStreamWriter osw = new OutputStreamWriter(fos);
+            BufferedWriter bw = new BufferedWriter(osw); // Toujours utiliser car plus efficace
+            bw.newLine(); // Écrire une nouvelle ligne
+            bw.write(nom); // Écrire le nom
+            bw.flush(); // Assurez-vous que tout est écrit dans le fichier avant de fermer quand metter flush
+
+
+        } catch (IOException fnfe) {
+            fnfe.printStackTrace();
+        }
+
     }
     public int nbMotScanner(){
+//        trouver le nombre de mots de votre fichier texte en utilisant un Scanner.
         String fileName = "file.txt";
         Scanner sc = null;
         int compteur = 0;
 
-        //Le delimiteur par defaut est un caractere blanc ( espace,\r ,\n etc)
-        sc.useDelimiter("\\d"); // changer le delimiteur
+
         try {
             FileInputStream fis = openFileInput(fileName);
-            sc = new Scanner(fis);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            String ligne = br.readLine();;
 
-            while (sc.hasNext()){
-                compteur++;
+            while (ligne  != null) {
+                sc = new Scanner(ligne);
+                //Le delimiteur par defaut est un caractere blanc ( espace,\r ,\n etc)
+                sc.useDelimiter("\\d"); // changer le delimiteur
+
+                while (sc.hasNext()) {
+                    sc.next();
+                    compteur++;
+                }
+              ligne = br.readLine();
             }
-
+            qd.setText(String.valueOf(compteur));
         }catch (IOException e){
             e.printStackTrace();
         }
-
             return compteur;
 
     }
-
-
 
 }
