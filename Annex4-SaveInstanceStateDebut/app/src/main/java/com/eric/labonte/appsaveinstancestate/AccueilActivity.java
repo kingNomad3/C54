@@ -17,7 +17,9 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class AccueilActivity extends AppCompatActivity {
@@ -30,7 +32,6 @@ public class AccueilActivity extends AppCompatActivity {
     TextView salut;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,27 +40,32 @@ public class AccueilActivity extends AppCompatActivity {
         startAc = findViewById(R.id.boutonStartActivityForResult);
         salut = findViewById(R.id.texteSalutations);
 
-        ec=  new Ecouteur();
+        ec = new Ecouteur();
         startAc.setOnClickListener(ec);
 
         //boomrange
-        lanceur =  registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new CallBackIdentification());
+        lanceur = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new CallBackIdentification());
 
 
         try (
-                FileOutputStream fos = context.openFileOutput("fichier.ser", Context.MODE_PRIVATE);
+                FileInputStream fis = openFileInput("fichier.ser");
                 //buffer special pour les objets
-                ObjectOutputStream oos = new ObjectOutputStream(fos)
-        )
-        {
-            oos.writeObject(liste);
+                ObjectInputStream oos = new ObjectInputStream(fis);
+        ) {
+            user = (Utilisateur) oos.readObject();
+            salut.setText("Salut" + user.getNom() + "" + user.getPrenom());
 
-        }catch (Exception o){
-            o.printStackTrace();
-        }
+        } catch (Exception o) {
+            try {
+                user = (Utilisateur) savedInstanceState.getSerializable("user");
+                salut.setText("Bonjour " + user.getNom() + user.getPrenom());
+            } catch (NullPointerException np) {
+                np.printStackTrace();
+                salut.setText("Bonjour");
+            }
 
 
-
+//      autre facon
 //        try {
 //            user = (Utilisateur) savedInstanceState.getSerializable("user");
 //            salut.setText("Bonjour " + user.getNom() + user.getPrenom());
@@ -68,7 +74,7 @@ public class AccueilActivity extends AppCompatActivity {
 //            salut.setText("Bonjour");
 //        }
 
-    }
+        }
 //    android:configChanges="orientation|screenSize|keyboard|keyboardHidden" dans le manifest
 //    @Override
 //    public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -76,21 +82,26 @@ public class AccueilActivity extends AppCompatActivity {
 //        outState.putSerializable("user",user);
 //    }
 
-    private class CallBackIdentification implements ActivityResultCallback<ActivityResult>{
+
+
+
+    }
+
+    private class CallBackIdentification implements ActivityResultCallback<ActivityResult> {
         @Override
         public void onActivityResult(ActivityResult result) {
             //c'est ici que le boomrang  va revenir
-            if (result.getResultCode() == RESULT_OK){
-                user =  (Utilisateur) result.getData().getSerializableExtra("user");
+            if (result.getResultCode() == RESULT_OK) {
+                user = (Utilisateur) result.getData().getSerializableExtra("user");
                 salut.setText("Bonjour " + user.getNom() + user.getPrenom());
             }
         }
     }
 
-    private class Ecouteur implements AdapterView.OnClickListener{
+    private class Ecouteur implements AdapterView.OnClickListener {
         @Override
         public void onClick(View v) {
-           lanceur.launch(new Intent( AccueilActivity.this, IdentificationActivity.class));
+            lanceur.launch(new Intent(AccueilActivity.this, IdentificationActivity.class));
         }
     }
 }

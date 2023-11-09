@@ -12,14 +12,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+
 public class MainActivity extends AppCompatActivity {
 
     SeekBar seekbarSonnerie;
     SeekBar seekBarMedia;
     SeekBar seekBarNotif;
 
-    ArrayList<Integer> seekBar;
-
+    ArrayList<Integer> seekBarValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,61 +30,58 @@ public class MainActivity extends AppCompatActivity {
         seekBarMedia = findViewById(R.id.seekBarMedia);
         seekBarNotif = findViewById(R.id.seekBarNotif);
 
+        // Load SeekBar values from serialization
+        seekBarValues = deSerializeList("fichier.ser");
 
+        // Initialize SeekBars with default values if not previously serialized
+        if (seekBarValues == null) {
+            seekBarValues = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
+                seekBarValues.add(0); // Default values for Sonnerie, Media, and Notif
+            }
+        }
 
-        seekBar.add(seekbarSonnerie.getProgress());
-        seekBar.add(seekBarMedia.getProgress());
-        seekBar.add(seekBarNotif.getProgress());
-
-
-
-
-
-
+        setupSeekBar(seekbarSonnerie, 0);
+        setupSeekBar(seekBarMedia, 1);
+        setupSeekBar(seekBarNotif, 2);
     }
 
-    public void seriazableListeer(){
-        try (
-                FileOutputStream fos = this.openFileOutput("seekbar.ser", Context.MODE_PRIVATE);
-                //buffer special pour les objets
-                ObjectOutputStream oos = new ObjectOutputStream(fos)
-        )
-        {
-            oos.writeObject(seekBar);
+    private void setupSeekBar(SeekBar seekBar, final int index) {
+        seekBar.setProgress(seekBarValues.get(index));
 
-        }catch (Exception o){
-            o.printStackTrace();
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                seekBarValues.set(index, progress);
+                serializeList(seekBarValues, "fichier.ser");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+    }
+
+    private void serializeList(ArrayList<Integer> list, String filename) {
+        try (FileOutputStream fos = this.openFileOutput(filename, Context.MODE_PRIVATE);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(list);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public ArrayList<Integer> deSeriazableListe() {
-        try (
-                FileInputStream fis = this.openFileInput("seekbar.ser");
-                //buffer special pour les objets
-                ObjectInputStream ois = new ObjectInputStream(fis))
-        {
-            seekBar = (ArrayList<Integer>) ois.readObject();
-
-        }catch (Exception o){
-            o.printStackTrace();
+    private ArrayList<Integer> deSerializeList(String filename) {
+        try (FileInputStream fis = this.openFileInput(filename);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            return (ArrayList<Integer>) ois.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return seekBar;
     }
-
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-
-
-
-    }
-
-    protected void onStop() {
-        super.onStop();
-
-    }
-
 }

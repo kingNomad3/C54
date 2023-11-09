@@ -40,8 +40,7 @@ public class IdentificationActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         try (
-                FileOutputStream fos = context.openFileOutput("fichier.ser", Context.MODE_PRIVATE);
-                //buffer special pour les objets
+                FileOutputStream fos =openFileOutput("fichier.ser", Context.MODE_PRIVATE);
                 ObjectOutputStream oos = new ObjectOutputStream(fos)
         )
         {
