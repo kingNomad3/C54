@@ -30,14 +30,14 @@ public class MainActivity extends AppCompatActivity {
         seekBarMedia = findViewById(R.id.seekBarMedia);
         seekBarNotif = findViewById(R.id.seekBarNotif);
 
-        // Load SeekBar values from serialization
+
         seekBarValues = deSerializeList("fichier.ser");
 
         // Initialize SeekBars with default values if not previously serialized
         if (seekBarValues == null) {
             seekBarValues = new ArrayList<>();
             for (int i = 0; i < 3; i++) {
-                seekBarValues.add(0); // Default values for Sonnerie, Media, and Notif
+                seekBarValues.add(0);
             }
         }
 

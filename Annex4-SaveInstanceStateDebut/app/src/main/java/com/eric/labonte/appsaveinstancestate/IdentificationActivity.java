@@ -17,7 +17,7 @@ public class IdentificationActivity extends AppCompatActivity {
 
     EditText champPrenom, champNom;
     Button confirmer;
-    private Context context;
+
     Utilisateur user;
 
 
