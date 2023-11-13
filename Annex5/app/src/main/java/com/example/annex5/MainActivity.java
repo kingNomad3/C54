@@ -19,10 +19,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
-    TextView palmares;
-    TextView date;
-    TextView nomChanson;
-    ImageView image;
+
 
     ListView liste;
 
@@ -79,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         return v;
     }
+
 
 
 

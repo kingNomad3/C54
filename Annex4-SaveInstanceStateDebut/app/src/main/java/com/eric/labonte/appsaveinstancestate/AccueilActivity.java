@@ -47,6 +47,7 @@ public class AccueilActivity extends AppCompatActivity {
         lanceur = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new CallBackIdentification());
 
 
+        //deseralisation
         try (
                 FileInputStream fis = openFileInput("fichier.ser");
                 //buffer special pour les objets
@@ -81,9 +82,6 @@ public class AccueilActivity extends AppCompatActivity {
 //        super.onSaveInstanceState(outState);
 //        outState.putSerializable("user",user);
 //    }
-
-
-
 
     }
 
