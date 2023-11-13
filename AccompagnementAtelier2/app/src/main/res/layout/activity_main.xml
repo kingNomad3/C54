@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="35dp"
+        android:gravity="center"
+        android:text="Afficher le nom des artistes présents dans le Singleton"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/texteArtistes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="223dp"
+        android:background="#339C27B0" />
+
+    <Button
+        android:id="@+id/bouton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="35dp"
+        android:text="Afficher le nom des oeuvres ayant été peintes après 1900" />
+
+    <TextView
+        android:id="@+id/texteOeuvres"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#339C27B0" />
+</LinearLayout>

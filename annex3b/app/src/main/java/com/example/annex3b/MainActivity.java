@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         seekbarSonnerie = findViewById(R.id.seekBarSonnerie);
         seekBarMedia = findViewById(R.id.seekBarMedia);
         seekBarNotif = findViewById(R.id.seekBarNotif);
+        System.out.println("onCreate");
 
 //        seekBarValues = deSerializeList("fichier.ser");
 //
@@ -64,11 +65,40 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        System.out.println("onStart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("onResume");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        System.out.println("onRestart");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        System.out.println("onPause");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("onDestroy");
+    }
 
     @Override
     protected void onStop() {
         super.onStop();
-
+        System.out.println("onStop");
         //serialisation
         try(
             FileOutputStream fos = openFileOutput("fichier.ser",Context.MODE_PRIVATE);
