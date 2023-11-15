@@ -1,5 +1,7 @@
 package com.example.tp1;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,12 +9,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -22,7 +27,9 @@ import android.widget.TextView;
 
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.PlayerApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.client.CallResult;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
 
@@ -35,240 +42,170 @@ import java.util.Vector;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static Spotify instance;
+    private ImageView boutonPlay;
+    private TextView nomChanson;
+    private TextView nomArtiste;
+    private ImageView imageChanson;
+    private SeekBar tempsChanson;
+    private Chronometer chrono;
+    private ImageView skipBack;
+    private ImageView skipForward;
+    private long tempsPause = 0;
 
-    private static final String CLIENT_ID = "6aa9f568231047e1945bf21ade475261";
-    private static final String REDIRECT_URI = "com.example.tp1://callback";
-    private SpotifyAppRemote mSpotifyAppRemote;
+    private Button pagePlaylists;
+    private androidx.activity.result.ActivityResultLauncher<Intent> launcher;
+    private boolean reload = true; //Est true li il y as besoin de mettre a jour les infos de la chanson
 
-    final PlayerState[] currentPlayerState = new PlayerState[1];
-
-    ActivityResultLauncher<Intent> lanceur;
-
-    ArrayList<Playlist> playlists;
-
-    TextView playlist, song, artist;
-    ImageView cover;
-    ImageView getInfoBtn, changePlaylistBtn, playPauseBtn, skipNextBtn, skipPreviousBtn;
-    ProgressBar progressBar;
-    Chronometer chronometer;
-
-    Boolean isPlaying, isFirstStart;
-    long timeWhenStopped;
-    int chosenPlaylist;
-
-
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // views
-//        playlist = findViewById(R.id);
-        song = findViewById(R.id.chansonTexte);
-        artist = findViewById(R.id.artisteText);
-        cover = findViewById(R.id.AlbumImage);
-//        getInfoBtn = findViewById(R.id.Info);
-//        changePlaylistBtn = findViewById(R.id.skipButton);
-        playPauseBtn = findViewById(R.id.playButton);
-        skipNextBtn = findViewById(R.id.backButton);
-        skipPreviousBtn = findViewById(R.id.backButton);
-        progressBar = findViewById(R.id.SeekBarTemps);
-//        chronometer = findViewById(R.id.chronometer);
+        instance = Spotify.getInstance(this);
+        boutonPlay = findViewById(R.id.playButton);
+        nomChanson = findViewById(R.id.nomChanson);
+        nomArtiste = findViewById(R.id.artisteText);
+        imageChanson = findViewById(R.id.AlbumImage);
+        tempsChanson = findViewById(R.id.SeekBarTemps);
+        chrono = findViewById(R.id.chrono);
+        skipBack = findViewById(R.id.backButton);
+        skipForward = findViewById(R.id.skipButton);
+        pagePlaylists = findViewById(R.id.pagePlaylists);
 
-        // mettre le progressbar en rouge
-        progressBar.getProgressDrawable().setColorFilter(
-                Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
 
-        // playlists
-        playlists = new ArrayList<Playlist>();
-        playlists.add(new Playlist("E", "5e2rrc0fWkCLCOeV3q2c5C"));
-        playlists.add(new Playlist("P", "37i9dQZF1EIfFiIpBngZoF"));
-        playlists.add(new Playlist("M", "76idAjxGH6CK6NmjMcaAAv"));
-        playlists.add(new Playlist("R", "1vb24BVDNiaDJjvsRbk8XJ"));
-        playlists.add(new Playlist("R", "5A8I08NR69Wnn4LC2Kp1E4"));
-        playlists.add(new Playlist("", "2CZSUu4eiRdYjMN1GJpqFR"));
+        updateInfo(); //Afin de faire que onChronometerTick commence à être appelé
 
-        // lanceur
-        lanceur = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        chosenPlaylist = result.getData().getIntExtra("chosenPlaylist", -1);
-                        savePlaylist();
-                        playlist.setText(playlists.get(chosenPlaylist).nom);
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                pause();
-                                playPauseBtn.setImageResource(android.R.drawable.ic_media_play);
-                                isPlaying = false;
-                            }
-                        }, 500);
-                    }
+        //Ticks
+        chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                //Empêche onChronometerTick d'être appelé avant que updateInfo est fini au cas ou il faut changer la valeur du chrono
+                chronometer.setOnChronometerTickListener(null);
+                updateInfo();
+                chronometer.setOnChronometerTickListener(this);
+            }
+        });
+        //Play et pause
+        boutonPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (instance.isPlaying()){
+                    pause();
                 }
-        );
+                else{
+                    play();
+                }
+            }
+        });
 
-        // variables
-         isPlaying = false;
-        isFirstStart = true;
-        timeWhenStopped = 0;
-        chosenPlaylist = 0;
+        //Changement chanson
+        skipBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (instance != null) {
+                    instance.previousSong();
+                } else {
+                    // Handle the case where the instance is null (perhaps show an error message)
+                    Log.e("MainActivity", "Instance of Spotify is null");
+                }
+            }
+        });
+        skipForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                instance.nextSong();
+            }
+        });
+        //Mouvement barre progress
+        tempsChanson.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
 
-        // on cherche le playlist choisi
-        try {
-            FileInputStream fis = openFileInput("chosenPlaylist.ser");
-            ObjectInputStream ois  = new ObjectInputStream(fis);
-            chosenPlaylist = (int)ois.readObject();
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
-        } catch (Exception e) {
-            savePlaylist();
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                instance. move(seekBar.getProgress());
+                seekBar.setProgress((int) instance.getSongProgress());
+            }
+        });
+
+
+
+        //Partie boomerang
+        launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == RESULT_OK){
+                    instance.setActivePlaylist((String) result.getData().getSerializableExtra("lienSpotify"));
+                }
+            }
+        });
+        pagePlaylists.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launcher.launch(new Intent(MainActivity.this, ChoisirPlayListActivity.class));
+            }
+        });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (instance.isConnected()){
+            reload = true;
+            play();
         }
-//        playlist.setText(playlists.get(chosenPlaylist).nom);
-
-        // écouteurs
-//        getInfoBtn.setOnClickListener(source -> {
-//            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://voyage.caaquebec.com/fr/destinations/afrique/egypte/"));
-//            startActivity(i);
-//        });
-
-//        changePlaylistBtn.setOnClickListener(v -> {
-//            Intent i = new Intent(this, ChoisirPlaylistActivity.class);
-//            lanceur.launch(i);
-//        });
-
-        playPauseBtn.setOnClickListener(view -> {
-            if(!isPlaying) {
-                ((ImageButton)view).setImageResource(android.R.drawable.ic_media_pause);
-                play(chosenPlaylist);
-            }
-            else {
-                ((ImageButton)view).setImageResource(android.R.drawable.ic_media_play);
-                pause();
-            }
-            isPlaying = !isPlaying;
-        });
-
-        skipNextBtn.setOnClickListener(view -> {
-            skipNext();
-        });
-
-        skipPreviousBtn.setOnClickListener(view -> {
-            skipPrevious();
-        });
-
-//        chronometer.setOnChronometerTickListener(chrono -> {
-//            long songDuration = currentPlayerState[0].track.duration;
-//            long elapsedTime = SystemClock.elapsedRealtime() + songDuration - chrono.getBase();
-//            int progress = (int) (100 * elapsedTime / songDuration);
-//            progressBar.setProgress(progress);
-//        });
     }
-
     @Override
-    protected void onStart() {
-
-        super.onStart();
-        ConnectionParams connectionParams =
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build();
-
-        SpotifyAppRemote.connect(this, connectionParams,
-                new Connector.ConnectionListener() {
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        connected();
-                    }
-
-                    public void onFailure(Throwable throwable) {
-                        Log.e("MyActivity", throwable.getMessage(), throwable);
-                    }
-                });
-    }
-
-    @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
-        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        pause();
     }
-
-    private void savePlaylist(){
-        ObjectOutputStream oos = null;
-        try {
-            FileOutputStream fos = openFileOutput("chosenPlaylist.ser", Context.MODE_PRIVATE);
-            oos = new ObjectOutputStream(fos);
-            oos.writeObject(chosenPlaylist);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                oos.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    private void play() {
+        instance.play();
+        //chrono.setBase(SystemClock.elapsedRealtime() + tempsPause);
+        chrono.setBase(SystemClock.elapsedRealtime() - instance.getSongProgress());
+        chrono.start();
+//        boutonPlay.setImageDrawable(getDrawable(R.drawable.pause));
     }
-
-    private void connected() {
-        mSpotifyAppRemote.getPlayerApi()
-                .subscribeToPlayerState()
-                .setEventCallback(playerState -> {
-                    if(playerState.track == null) return;
-
-                    // si c'est la première chanson ou
-                    // si c'est la chanson a changé
-                    if (currentPlayerState[0] == null ||
-                            !playerState.track.uri.equals(currentPlayerState[0].track.uri))
-                        updateSong(playerState);
-                });
-    }
-
-    private void updateSong(PlayerState playerState){
-        mSpotifyAppRemote.getImagesApi()
-                .getImage(playerState.track.imageUri)
-                .setResultCallback(bitmap -> {
-                    cover.setImageBitmap(bitmap);
-                });
-        song.setText(playerState.track.name);
-        artist.setText(playerState.track.artist.name);
-
-        timeWhenStopped = playerState.playbackPosition;
-        currentPlayerState[0] = playerState;
-
-        startChronometer();
-        if(isFirstStart) {pause(); isFirstStart = !isFirstStart;}
-    }
-
-    private void startChronometer(){
-        long songDuration = currentPlayerState[0].track.duration;
-        chronometer.setBase(SystemClock.elapsedRealtime() + songDuration - timeWhenStopped);
-        chronometer.start();
-    }
-
-    private void stopChronometer(){
-        long songDuration = currentPlayerState[0].track.duration;
-        timeWhenStopped = SystemClock.elapsedRealtime() + songDuration - chronometer.getBase() ;
-        chronometer.stop();
-    }
-
-    private void play(int chosenPlaylist) {
-        startChronometer();
-        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + playlists.get(chosenPlaylist).id.toString());
-    }
-
     private void pause() {
-        mSpotifyAppRemote.getPlayerApi().pause();
-        stopChronometer();
+        instance.pause();
+        chrono.stop();
+        //tempsPause = chrono.getBase() - SystemClock.elapsedRealtime();
+//        boutonPlay.setImageDrawable(getDrawable(R.drawable.play));
+
+    }
+    private void updateInfo(){
+        if (instance.isConnected()){
+            instance.updateInfo();
+            if (instance.songChanged() || reload == true){ //Verfie si la chanson as été changée il y as peu
+                newSong();
+                reload = false;
+                instance.resetSongChanged(); //Dit a SpotifyDiffuseur que le changement de chanson à été pris en compte
+            }
+            updateSeekBar(); //Ajoute la seconde qui est passée
+        }
+    }
+    private void updateSeekBar(){
+        tempsChanson.setProgress(tempsChanson.getProgress() + 1000);
+    }
+    //Est appelé après un changement de chanson
+    private void newSong(){
+        nomChanson.setText(instance.getNomChanson());
+        nomArtiste.setText(instance.getNomArtiste());
+        tempsChanson.setMax((int) instance.getSongLenght());
+        //Met pas a zero au cas ou une chanson jouais déja a ouverture de l'app ou changement de playlist
+        setChrono();
+        tempsChanson.setProgress((int) instance.getSongProgress());
+        imageChanson.setImageBitmap(instance.getCouvertureChanson());
+    }
+    //Met le temps sur le chronometre égal au progress de la chanson
+    private void setChrono() {
+        chrono.setBase(SystemClock.elapsedRealtime() - instance.getSongProgress());
     }
 
-    private void skipNext() {
-        mSpotifyAppRemote.getPlayerApi().skipNext();
-    }
-
-    private void skipPrevious() {
-        mSpotifyAppRemote.getPlayerApi().skipPrevious();
-    }
 }
