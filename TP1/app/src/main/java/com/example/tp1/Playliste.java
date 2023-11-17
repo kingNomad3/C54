@@ -1,17 +1,23 @@
 package com.example.tp1;
 
 public class Playliste {
-    String nom;
-    Integer duree;
-    Integer nbChansons;
-    Integer image;
-    String lienSpotify;
+    Integer imageCover;
+    String nomChanson;
+    String nomArtiste;
+    String description;
+    String nbSongs;
+    String duree;
+    String link;
 
-    public Playliste(String nom, Integer duree, Integer nbChansons, Integer image, String lienSpotify) {
-        this.nom = nom;
+
+    public Playliste(Integer imageCover, String nomChanson, String nomArtiste, String description, String nbSongs, String duree, String link) {
+        this.imageCover = imageCover;
+        this.nomChanson = nomChanson;
+        this.nomArtiste = nomArtiste;
+        this.description = description;
+        this.nbSongs = nbSongs;
         this.duree = duree;
-        this.nbChansons = nbChansons;
-        this.image = image;
-        this.lienSpotify = lienSpotify;
+        this.link = link;
     }
+
 }

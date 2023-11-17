@@ -2,149 +2,195 @@ package com.example.tp1;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-
-import androidx.appcompat.app.AppCompatActivity;
+import android.util.Log;
 
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.PlayerApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.protocol.client.CallResult;
 import com.spotify.protocol.types.Track;
 
-public class Spotify extends AppCompatActivity {
+public class Spotify {
 
     private static Spotify instance;
-    private PlayerApi playerApi;
-    private  SpotifyAppRemote appRemote;
     private Context context;
+
     private static final String CLIENT_ID = "6aa9f568231047e1945bf21ade475261";
     private static final String REDIRECT_URI = "com.example.tp1://callback";
-    private String nom;
-    private String artiste;
-    private Bitmap image;
-    private double songLenght; //Longeur en milisecondes
-    private long songProgress; //Place dans la chanson en milisecondes
-    private boolean songChanged = false; //Si une chanson à été changée et que MainActivity n'as pas encore géré le changement
-    private boolean connected = false; //Si la connection a spotify est établie
-    private String curSong = "aucune"; //Uri de la chanson en train de jouer
-    private boolean isPlaying = false; //Si une chanson est en train de jouer
-    private String activePlaylist = "spotify:playlist:37i9dQZF1DWYMokBiQj5qF";
+    private SpotifyAppRemote mSpotifyAppRemote;
+    private PlayerApi playerApi;
 
-    public static Spotify getInstance(Context context) {
-        if (instance == null)
-            instance = new Spotify(context);
-        return instance;
-    }
+    //info player
+    private boolean isConnected = false;
+    private String currentSongURI;
+    private boolean isPlaying;
+    private boolean songChanged;
+    private String currentPlaylist = "spotify:playlist:1Q6ivYwu0sg0DEwHr92Jtf";
+    //info chanson:
+    private String name;
+    private String artist;
+    private Bitmap cover;
+    private long lenght;
+    private long progress;
 
-    private Spotify(Context context) {
-        this.context = context;
+
+
+    private Spotify(Context c) {
+        this.context = c;
         this.connect();
     }
 
-    private void connect(){
+    public static Spotify getInstance(Context c) {
+        if(instance == null)
+            instance = new Spotify(c);
+        return instance;
+    }
+
+
+    public void connect() {
         ConnectionParams connectionParams =
                 new ConnectionParams.Builder(CLIENT_ID)
                         .setRedirectUri(REDIRECT_URI)
                         .showAuthView(true)
                         .build();
 
-        SpotifyAppRemote.connect(context, connectionParams, new Connector.ConnectionListener()
-        {
-            @Override
-            public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                appRemote = spotifyAppRemote;
-                playerApi = appRemote.getPlayerApi();
-                connected();
-            }
+        //connect to App Remote
+        SpotifyAppRemote.connect(context, connectionParams,
+                new Connector.ConnectionListener() {
 
-            @Override
-            public void onFailure(Throwable throwable) {
-                System.out.println(throwable.getMessage());
-            }
-        });
+                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote;
+                        playerApi = mSpotifyAppRemote.getPlayerApi();
+
+                        // Now you can start interacting with App Remote
+                        connected();
+
+                    }
+
+                    public void onFailure(Throwable throwable) {
+                        Log.e("MyActivity", throwable.getMessage(), throwable);
+
+                        // Something went wrong when attempting to connect! Handle errors here
+                    }
+                });
+    }
+
+    public void disconnect() {
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
 
     private void connected() {
-        this.updateInfo();
-        connected = true;
+        this.update();
+        isConnected = true;
     }
+
+
     public void play() {
-        if (playerApi != null) {
-            isPlaying = true;
-            playerApi.play(activePlaylist);
-        }
+        playerApi.play(currentPlaylist);
+        isPlaying = true;
     }
-    public void pause(){
-        isPlaying = false;
+
+    //ACTIONS
+    public void resume() {
+        //playerApi.play(currentPlaylist); //TODO resume song instead of playlist
+        playerApi.resume();
+        isPlaying = true;
+    }
+
+    public void pause() {
         playerApi.pause();
+        isPlaying = false;
     }
-    public void move(int postion){ //Change le progress de la chason à la position donnée en miliseconds
-        this.updateInfo();
-        playerApi.seekTo(postion);
-        songProgress = postion;
+
+    public void next() {
+        playerApi.skipNext();
+        this.update();
     }
-    public boolean isPlaying(){
-        return isPlaying;
+
+    public void previous() {
+        playerApi.skipPrevious();
+        this.update();
     }
-    //Met a jour les informations du diffuseur sur la chanson jouée
-    public void updateInfo(){
+
+    public void toggleShuffle() {
+        playerApi.toggleShuffle();
+    }
+
+    public void toggleRepeat() {
+        playerApi.toggleRepeat();
+    }
+
+    public void slide(int pos) {
+        this.update();
+        progress = pos;
+        playerApi.seekTo(pos);
+    }
+
+    public void update() {
         playerApi.subscribeToPlayerState().setEventCallback(playerState -> {
             final Track track = playerState.track;
-            if (track != null) {
-                if (!playerState.track.uri.equals(curSong) && curSong != null){ //Verifie si la chanson qui joue est celle qui jouais avant ce tic
-                    nom = track.name;
-                    artiste = track.artist.name;
-                    appRemote.getImagesApi().getImage(track.imageUri).setResultCallback(
-                            new CallResult.ResultCallback<Bitmap>() {
-                                @Override
-                                public void onResult(Bitmap data) {
-                                    image = data;
-                                }
-                            }
-                    );
-                    songLenght = track.duration;
+            if(track != null) {
+                //get player info:
+                if(!playerState.track.uri.equals(currentSongURI) && currentSongURI != null) //TODO: if repeat is ON
                     songChanged = true;
-                    curSong = playerState.track.uri;
-                }
-                songProgress = playerState.playbackPosition;
+                currentSongURI = playerState.track.uri;
+
+                //get song info:
+                name = track.name;
+                artist = track.artist.name;
+                mSpotifyAppRemote.getImagesApi().getImage(track.imageUri).setResultCallback(
+                        data -> cover = data
+                );
+                lenght = track.duration;
+                progress = playerState.playbackPosition;
+
+                isPlaying = !playerState.isPaused;
             }
         });
     }
-    public String getNomChanson(){
-        return nom;
+
+    //OTHERS
+    public boolean isPlaying() {
+        return isPlaying;
     }
-    public String getNomArtiste(){
-        return artiste;
+
+    public boolean isConnected() {
+        return isConnected;
     }
-    public double getSongLenght(){
-        return songLenght;
+
+    public long getLenght() {
+        return lenght;
     }
-    public long getSongProgress() {
-        return songProgress;
+
+    public String getName() {
+        return name;
     }
-    public Bitmap getCouvertureChanson(){
-        return image;
+
+    public String getArtist() {
+        return artist;
     }
-    public void nextSong(){
-        if (playerApi != null) {
-            playerApi.skipNext();
-        }
+
+    public Bitmap getCover() {
+        return cover;
     }
-    public void previousSong(){
-        playerApi.skipPrevious();
-    }
-    public boolean songChanged(){
+
+    public boolean isSongChanged() {
         return songChanged;
     }
-    public void resetSongChanged(){
+
+    public void resetSongChanged() {
         songChanged = false;
     }
-    public boolean isConnected(){
-        return connected;
+
+    public long getProgress() {
+        return progress;
     }
-    public void setActivePlaylist(String activePlaylist) {
-        this.activePlaylist = activePlaylist;
-        this.play();
+
+    public void setCurrentPlaylist(String currentPlaylist) {
+        this.currentPlaylist = currentPlaylist;
+        playerApi.play(currentPlaylist);
+        this.update();
     }
 }
+
+

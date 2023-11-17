@@ -1,62 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:background="@color/black"
-    android:gravity="center">
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/nomPlaylist"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="TextView" />
+        android:text="Pick your playlist"
+        android:textSize="20sp" />
 
-    <LinearLayout
-        android:id="@+id/infoPlaylist"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10sp"
+        android:textAlignment="center"/>
 
-        <TextView
-            android:id="@+id/titreNb"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Nombre de chansons:" />
-
-        <TextView
-            android:id="@+id/nbChansons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="TextView" />
-
-        <TextView
-            android:id="@+id/titreDuree"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Durée (min):" />
-
-        <TextView
-            android:id="@+id/duréePlaylist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="TextView" />
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/imagePlaylist"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        tools:srcCompat="@tools:sample/avatars" />
 </LinearLayout>
