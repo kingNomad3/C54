@@ -16,6 +16,7 @@ public class Spotify {
     private Context context;
 
     private static final String CLIENT_ID = "6aa9f568231047e1945bf21ade475261";
+//    private static final String CLIENT_ID = "6aa9f568231047e1945bf21ade475261";
     private static final String REDIRECT_URI = "com.example.tp1://callback";
     private SpotifyAppRemote mSpotifyAppRemote;
     private PlayerApi playerApi;

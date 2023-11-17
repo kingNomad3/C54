@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     Button bouton;
 
     Singleton liste;
+    Oeuvre oeuvre;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +35,14 @@ public class MainActivity extends AppCompatActivity {
         // 1, utiliser la méthode forEach de la classe ArrayList pour afficher les noms d'artistes présents dans le Singleton, séparés d'une virgule
 
         List<Oeuvre> afficherListe = liste.getListe();
-        afficherListe.forEach();
+        afficherListe.forEach(oeuvre1 -> texteOeuvres.setText((CharSequence) oeuvre));
 
 
 
         // 3. utiliser une expression lambda afin de gérer le clic de bouton et d'afficher dans le textView de le nom
         // des oeuvres ayabt été peintes après 1900
 
-        bouton.setOnClickListener(source->texteArtistes.setText() + texteOeuvres.setText());
+//        bouton.setOnClickListener(source->texteArtistes.setText() );
 
 
     }
