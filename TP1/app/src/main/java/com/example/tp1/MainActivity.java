@@ -86,13 +86,13 @@ public class MainActivity extends AppCompatActivity {
 //    tout les XML des boutons media viennent de la: https://gist.github.com/alexjlockwood/2d163aa6138a7f8894d76991456a9f68
 
     private ImageView backChansonButton,searchButton, prochainChansonBoutton,  shuffleButton, repeatButton,coverImage, jouerPauseButton,menuButton;
-    private TextView nomArtisteText, tempsText, nomChansonText, linkText;
+    private TextView nomArtisteText, tempsText, nomChansonText, lienText;
     private Chronometer temps;
     private SeekBar timeSeekBar;
     private androidx.activity.result.ActivityResultLauncher<Intent> launcher;
     private static Spotify instance;
     private long pauseTemps = 0;
-    private boolean started = false;
+    private boolean start = false;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         menuButton = findViewById(R.id.menubutton);
 //        repeatButton = findViewById(R.id.repeatButton);
         searchButton = findViewById(R.id.searchBouton);
-        linkText = findViewById(R.id.linkText);
+        lienText = findViewById(R.id.lienText);
         nomChansonText = findViewById(R.id.textTitle);
         nomArtisteText = findViewById(R.id.textArtist);
         coverImage = findViewById(R.id.album_cover);
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             public void onStartTrackingTouch(SeekBar seekBar) {}
         });
 
-        linkText.setOnClickListener(v -> {
+        lienText.setOnClickListener(v -> {
             String url = "https://www.masterclass.com/articles/kompa-music-guide";
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if(result.getResultCode() == RESULT_OK){
                 assert result.getData() != null;
-                instance.setCurrentPlaylist((String) result.getData().getSerializableExtra("link"));
+                instance.setCurrentPlaylist((String) result.getData().getSerializableExtra("lien"));
                 infoChansonAff(); //problem: doesnt work if first thing done when app launch, idk
             }
         });
@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     private void update() {
         if(instance.isConnected()) {
             instance.update();
-            if(started) {
+            if(start) {
                 if(instance.isSongChanged()) {
                     playNew();
                     instance.resetSongChanged();
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
             jouerPauseButton.setImageResource(R.drawable.pause_bouton_img);
 
         } else { temps.stop(); }
-        started = true;
+        start = true;
     }
 }
 //public class MainActivity extends AppCompatActivity {

@@ -93,8 +93,8 @@ public class Spotify {
 
     //ACTIONS
     public void resume() {
-        //playerApi.play(currentPlaylist); //TODO resume song instead of playlist
-        playerApi.resume();
+        playerApi.play(currentPlaylist);
+//        playerApi.resume();
         isPlaying = true;
     }
 

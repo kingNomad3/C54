@@ -34,7 +34,7 @@ public class PlaylistActivity extends AppCompatActivity {
                 "test",
                 "test", "test", "spotify:album:5JJ779nrbHx0KB2lBrMMa4");
 
-        playlist2 = new Playliste(R.drawable.playlist3, "Ctest", "test",
+        playlist3 = new Playliste(R.drawable.playlist3, "Ctest", "test",
                 "test",
                 "test", "test", "spotify:album:5JJ779nrbHx0KB2lBrMMa4");
 
@@ -64,6 +64,10 @@ public class PlaylistActivity extends AppCompatActivity {
                 new String[]{"cover", "name", "artist", "description", "nbSongs", "duration"},
                 new int[]{R.id.cover, R.id.nameText, R.id.artistText, R.id.descriptionText, R.id.tracksText, R.id.durationText}
         );
+
+        StringBuilder playlistebulder = new StringBuilder();
+
+//        listePlayliste.forEach(playlists-> playlistebulder);
 
         list = findViewById(R.id.list);
         list.setAdapter(simpleAdapter);
