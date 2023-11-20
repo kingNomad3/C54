@@ -26,24 +26,29 @@ public class MainActivity extends AppCompatActivity {
         texteOeuvres = findViewById(R.id.texteOeuvres);
         bouton = findViewById(R.id.bouton);
 
+        // Initialisation de l'instance Singleton et de l'instance Oeuvre
+        liste = Singleton.getInstance();
 
 
-
-
-
-
-        // 1, utiliser la méthode forEach de la classe ArrayList pour afficher les noms d'artistes présents dans le Singleton, séparés d'une virgule
-
+        // 1. Utiliser la méthode forEach de la classe ArrayList pour afficher les noms d'artistes
+        // présents dans le Singleton, séparés par une virgule
         List<Oeuvre> afficherListe = liste.getListe();
-        afficherListe.forEach(oeuvre1 -> texteOeuvres.setText((CharSequence) oeuvre));
 
 
+        // 3. Utiliser une expression lambda pour gérer le clic du bouton et afficher dans le TextView
+        // les noms des oeuvres ayant été créées après 1900
+        bouton.setOnClickListener(source -> {
+            List<Oeuvre> oeuvresApres1900 = liste.filtre();
+            StringBuilder oeuvresBuilder = new StringBuilder();
+            oeuvresApres1900.forEach(oeuvre1 -> oeuvresBuilder.append(oeuvre1.getTitre()).append("\n"));
+            String oeuvresString = oeuvresBuilder.toString();
 
-        // 3. utiliser une expression lambda afin de gérer le clic de bouton et d'afficher dans le textView de le nom
-        // des oeuvres ayabt été peintes après 1900
+            StringBuilder artistesBuilder = new StringBuilder();
+            afficherListe.forEach(oeuvre1 -> artistesBuilder.append(oeuvre1.getNomArtiste()).append("\n"));
+            String artistesString = artistesBuilder.toString();
+            texteOeuvres.setText(artistesString);
 
-//        bouton.setOnClickListener(source->texteArtistes.setText() );
-
-
+            texteArtistes.setText(oeuvresString);
+        });
     }
 }

@@ -14,7 +14,7 @@
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <LinearLayout
-        android:background="@drawable/squirclebutton"
+
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="vertical"

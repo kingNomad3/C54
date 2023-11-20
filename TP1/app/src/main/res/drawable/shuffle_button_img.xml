@@ -1,0 +1,29 @@
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <group
+        android:rotation="270"
+        android:pivotX="12"
+        android:pivotY="12">
+
+        <!-- First arrow -->
+        <path
+            android:pathData="M3,3L21,21M21,21L19,17M21,21L17,19"
+            android:strokeColor="#000000"
+            android:strokeWidth="2"
+            android:strokeLineCap="round"/>
+
+        <!-- Second arrow -->
+        <path
+            android:pathData="M21,3L3,21M3,21L5,17M3,21L7,19"
+            android:strokeColor="#000000"
+            android:strokeWidth="2"
+            android:strokeLineCap="round"/>
+
+    </group>
+
+</vector>

@@ -83,13 +83,15 @@ import android.widget.TextView;
 import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity {
 
-    private ImageView backChansonButton,searchButton, prochainChansonBoutton,  shuffleButton, repeatButton,coverImage, jouerPauseButton;
+//    tout les XML des boutons media viennent de la: https://gist.github.com/alexjlockwood/2d163aa6138a7f8894d76991456a9f68
+
+    private ImageView backChansonButton,searchButton, prochainChansonBoutton,  shuffleButton, repeatButton,coverImage, jouerPauseButton,menuButton;
     private TextView nomArtisteText, tempsText, nomChansonText, linkText;
     private Chronometer temps;
     private SeekBar timeSeekBar;
     private androidx.activity.result.ActivityResultLauncher<Intent> launcher;
     private static Spotify instance;
-    private long pauseTime = 0;
+    private long pauseTemps = 0;
     private boolean started = false;
 
     @SuppressLint("MissingInflatedId")
@@ -99,58 +101,58 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        jouerPauseButton = findViewById(R.id.jouerPauseButton);
-        prochainChansonBoutton = findViewById(R.id.prochainChansonBoutton);
-        backChansonButton = findViewById(R.id.backChansonButton);
+        jouerPauseButton = findViewById(R.id.playPauseButton);
+        prochainChansonBoutton = findViewById(R.id.nextButton);
+        backChansonButton = findViewById(R.id.previousButton);
         shuffleButton = findViewById(R.id.shuffleButton);
+        menuButton = findViewById(R.id.menubutton);
 //        repeatButton = findViewById(R.id.repeatButton);
-
-        //infos
-        nomChansonText = findViewById(R.id.nomChansonText);
-        nomArtisteText = findViewById(R.id.nomArtisteText);
-        coverImage = findViewById(R.id.coverImage);
-
-        //time
-        tempsText = findViewById(R.id.tempsText);
+        searchButton = findViewById(R.id.searchBouton);
+        linkText = findViewById(R.id.linkText);
+        nomChansonText = findViewById(R.id.textTitle);
+        nomArtisteText = findViewById(R.id.textArtist);
+        coverImage = findViewById(R.id.album_cover);
+        tempsText = findViewById(R.id.textTimeTotal);
         temps = findViewById(R.id.textTime);
         timeSeekBar = findViewById(R.id.slider);
 
-        //header
-        searchButton = findViewById(R.id.searchButton);
-        linkText = findViewById(R.id.linkText);
 
         instance = Spotify.getInstance(this);
 
-
         temps.start();
 
-        //LISTENERS ---------------------------------------------------------
 
         //PLAY ACTIONS:
         jouerPauseButton.setOnClickListener(v -> {
             if(instance.isPlaying()) {
                 instance.pause();
                 temps.stop();
-                pauseTime = temps.getBase() - SystemClock.elapsedRealtime();
-                jouerPauseButton.setImageResource(R.drawable.play_img);
+                pauseTemps = temps.getBase() - SystemClock.elapsedRealtime();
+                jouerPauseButton.setImageResource(R.drawable.play_bouton_img);
             } else {
                 instance.resume();
-                temps.setBase(SystemClock.elapsedRealtime() + pauseTime);
+                temps.setBase(SystemClock.elapsedRealtime() + pauseTemps);
                 temps.start();
-                jouerPauseButton.setImageResource(R.drawable.pause_img);
+                jouerPauseButton.setImageResource(R.drawable.pause_bouton_img);
             }
         });
 
         prochainChansonBoutton.setOnClickListener(v -> {
             instance.next();
             temps.setBase(SystemClock.elapsedRealtime());
-            jouerPauseButton.setImageResource(R.drawable.ic_pause);
+            jouerPauseButton.setImageResource(R.drawable.pause_bouton_img);
         });
 
         backChansonButton.setOnClickListener(v -> {
             instance.previous();
             temps.setBase(SystemClock.elapsedRealtime());
-            jouerPauseButton.setImageResource(R.drawable.ic_pause);
+            jouerPauseButton.setImageResource(R.drawable.pause_bouton_img);
+        });
+
+        menuButton.setOnClickListener(v ->{
+            Intent i = new Intent(MainActivity.this,PlaylistActivity.class);
+            startActivity(i);
+
         });
 
         shuffleButton.setOnClickListener(v -> instance.toggleShuffle());
@@ -225,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("DefaultLocale")
+//    https://stackoverflow.com/questions/9027317/how-to-convert-milliseconds-to-hhmmss-format
     private String millisToTime(long millis) {
         return String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
@@ -238,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
         timeSeekBar.setProgress((int) instance.getProgress());
 
         if(instance.isPlaying()) {
-            jouerPauseButton.setImageResource(R.drawable.ic_pause);
+            jouerPauseButton.setImageResource(R.drawable.pause_bouton_img);
 
         } else { temps.stop(); }
         started = true;
