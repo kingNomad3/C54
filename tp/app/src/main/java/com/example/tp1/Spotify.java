@@ -1,5 +1,6 @@
 package com.example.tp1;
 
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -16,7 +17,7 @@ public class Spotify {
     private Context context;
 
     private static final String CLIENT_ID = "6aa9f568231047e1945bf21ade475261";
-
+    private String currentPlaylist = "spotify:playlist:1Q6ivYwu0sg0DEwHr92Jtf";
     private SpotifyAppRemote mSpotifyAppRemote;
     private PlayerApi playerApi;
 
@@ -25,7 +26,7 @@ public class Spotify {
     private String currentSongURI;
     private boolean isPlaying;
     private boolean songChanged;
-    private String currentPlaylist = "spotify:playlist:1Q6ivYwu0sg0DEwHr92Jtf";
+
     private static final String REDIRECT_URI = "com.example.tp1://callback";
     //info chanson:
     private String name;
@@ -33,6 +34,7 @@ public class Spotify {
     private Bitmap cover;
     private long lenght;
     private long progress;
+    private int currentPlaylistIndex;
 
 
 
@@ -94,7 +96,7 @@ public class Spotify {
     //ACTIONS
     public void resume() {
         playerApi.play(currentPlaylist);
-//        playerApi.resume();
+        playerApi.resume();
         isPlaying = true;
     }
 
@@ -183,16 +185,24 @@ public class Spotify {
     public void resetSongChanged() {
         songChanged = false;
     }
+    public void setCurrentPlaylistIndex(int index) {
+        this.currentPlaylistIndex = index;
+    }
+
 
     public long getProgress() {
         return progress;
     }
 
+    public int getCurrentPlaylistIndex() {
+        return currentPlaylistIndex;
+    }
     public void setCurrentPlaylist(String currentPlaylist) {
         this.currentPlaylist = currentPlaylist;
         playerApi.play(currentPlaylist);
         this.update();
     }
 }
+
 
 
