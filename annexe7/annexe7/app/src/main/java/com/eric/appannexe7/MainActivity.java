@@ -49,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        ouEst.setOnClickListener(source -> {
-            Intent i = new Intent(Intent.ACTION_VIEW,Uri.parse("geo:0,0?q=ville, +province, +pays "));
+        ouEst.setOnClickListener(source -> {                          //geo:lat,long
+            Intent i  = new Intent(Intent.ACTION_VIEW,Uri.parse("geo:0,0?q=ville, +province, +pays "));
             startActivity(i);
         });
 
