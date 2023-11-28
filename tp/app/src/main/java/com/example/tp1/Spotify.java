@@ -153,8 +153,6 @@ public class Spotify {
         });
     }
 
-    //OTHERS
-
     public boolean isConnected() {
         return isConnected;
     }

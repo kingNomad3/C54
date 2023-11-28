@@ -32,19 +32,19 @@ public class ChoisirPlaylistActivity extends AppCompatActivity {
         playlist2.put("playlistName", "Kompa mix 2023");
 
         Map<String, String> playlist3 = new HashMap<>();
-        playlist2.put("playlistName", "Kompa HT");
+        playlist3.put("playlistName", "Kompa HT");
 
         Map<String, String> playlist4 = new HashMap<>();
-        playlist2.put("playlistName", "ayiti Klasik");
+        playlist4.put("playlistName", "ayiti Klasik");
 
         Map<String, String> playlist5 = new HashMap<>();
-        playlist2.put("playlistName", "Gouyad experience");
+        playlist5.put("playlistName", "Gouyad experience");
 
         Map<String, String> playlist6 = new HashMap<>();
-        playlist2.put("playlistName", "Haitiano");
+        playlist6.put("playlistName", "Haitiano");
 
         Map<String, String> playlist7 = new HashMap<>();
-        playlist2.put("playlistName", "Kompa HT");
+        playlist7.put("playlistName", "Kompa HT");
 
 
         playlistes.add(playlist1);

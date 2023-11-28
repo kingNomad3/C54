@@ -135,11 +135,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         changePlaylistBtn.setOnClickListener(source -> {
+            System.out.println("playliste change");
+
             Intent i = new Intent(this, ChoisirPlaylistActivity.class);
             lanceur.launch(i);
 
 //            instance.setCurrentPlaylist("spotify:playlist:" + playlistes.get(choixPlayliste).ChansonId.toString());
-//            playPauseBtn.setImageResource(R.drawable.pause_button_img);
+            playPauseBtn.setImageResource(R.drawable.pause_button_img);
+            System.out.println("playbtnpause");
         });
 
         if (isPlaying){
@@ -155,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 chronometer.start();
                 playPauseBtn.setImageResource(R.drawable.pause_button_img);
                 play(choixPlayliste);
+                mSpotifyAppRemote.getPlayerApi().resume();
             } else {
                 chronometer.stop();
                 timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
