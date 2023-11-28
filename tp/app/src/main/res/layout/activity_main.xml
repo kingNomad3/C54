@@ -22,17 +22,17 @@
             app:srcCompat="@drawable/search_button_img" />
 
         <TextView
-            android:id="@+id/Playlist"
+            android:id="@+id/Playliste"
             android:layout_width="335dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Playlist"
+            android:text="Playliste"
             android:textColor="#000000"
             android:textSize="24sp" />
 
         <ImageView
-            android:id="@+id/changePlaylist"
+            android:id="@+id/changerPlayliste"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -42,7 +42,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/Cover"
+        android:id="@+id/CoverAlbum"
         android:layout_width="330dp"
         android:layout_height="0dp"
         android:layout_gravity="center"
@@ -56,7 +56,7 @@
         android:layout_gravity="center"
         android:layout_weight="0.15"
         android:gravity="bottom"
-        android:text="Song"
+        android:text="Chanson"
         android:textColor="@color/black"
         android:textSize="24sp" />
 
@@ -66,7 +66,7 @@
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="0.2"
-        android:text="Artist"
+        android:text="Artiste"
         android:textColor="#000000"
         android:textSize="20sp" />
 

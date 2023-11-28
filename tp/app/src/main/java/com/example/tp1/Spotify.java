@@ -58,24 +58,20 @@ public class Spotify {
                         .build();
 
         //connect to App Remote
-        SpotifyAppRemote.connect(context, connectionParams,
-                new Connector.ConnectionListener() {
+        SpotifyAppRemote.connect(context, connectionParams, new Connector.ConnectionListener() {
+            public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                mSpotifyAppRemote = spotifyAppRemote;
+                playerApi = mSpotifyAppRemote.getPlayerApi();
+                Log.d("Spotify", "Connected to Spotify App Remote");
+                // Now you can start interacting with App Remote
+                connected();
+            }
 
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        playerApi = mSpotifyAppRemote.getPlayerApi();
-
-                        // Now you can start interacting with App Remote
-                        connected();
-
-                    }
-
-                    public void onFailure(Throwable throwable) {
-                        Log.e("MyActivity", throwable.getMessage(), throwable);
-
-                        // Something went wrong when attempting to connect! Handle errors here
-                    }
-                });
+            public void onFailure(Throwable throwable) {
+                Log.e("Spotify", "Connection to Spotify App Remote failed: " + throwable.getMessage());
+                // Something went wrong when attempting to connect! Handle errors here
+            }
+        });
     }
 
     public void disconnect() {
@@ -89,8 +85,12 @@ public class Spotify {
 
 
     public void play() {
-        playerApi.play(currentPlaylist);
-        isPlaying = true;
+        if (playerApi != null) {
+            playerApi.play(currentPlaylist);
+            isPlaying = true;
+        } else {
+            Log.e("Spotify", "PlayerApi is null. Spotify connection might not be established.");
+        }
     }
 
     //ACTIONS
@@ -154,9 +154,6 @@ public class Spotify {
     }
 
     //OTHERS
-    public boolean isPlaying() {
-        return isPlaying;
-    }
 
     public boolean isConnected() {
         return isConnected;
@@ -166,18 +163,6 @@ public class Spotify {
         return lenght;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public Bitmap getCover() {
-        return cover;
-    }
-
     public boolean isSongChanged() {
         return songChanged;
     }
@@ -185,10 +170,6 @@ public class Spotify {
     public void resetSongChanged() {
         songChanged = false;
     }
-    public void setCurrentPlaylistIndex(int index) {
-        this.currentPlaylistIndex = index;
-    }
-
 
     public long getProgress() {
         return progress;

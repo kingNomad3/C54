@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     // les albumes vont parraitre avec un decalage
     private static final String CLIENT_ID = "6aa9f568231047e1945bf21ade475261";
     private static final String REDIRECT_URI = "com.example.tp1://callback";
+
+
     private SpotifyAppRemote mSpotifyAppRemote;
     final PlayerState[] currentPlayerState = new PlayerState[1];
     ActivityResultLauncher<Intent> lanceur;
@@ -53,18 +55,17 @@ public class MainActivity extends AppCompatActivity {
     private long pauseTemps = 0;
 
 
-
     @SuppressLint("MissingInflatedId")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        playliste = findViewById(R.id.Playlist);
+        playliste = findViewById(R.id.Playliste);
         nomChanson = findViewById(R.id.nomChanson);
         nomArtiste = findViewById(R.id.nomArtiste);
-        albumCover = findViewById(R.id.Cover);
+        albumCover = findViewById(R.id.CoverAlbum);
         Lien = findViewById(R.id.info);
-        changePlaylistBtn = findViewById(R.id.changePlaylist);
+        changePlaylistBtn = findViewById(R.id.changerPlayliste);
         playPauseBtn = findViewById(R.id.PlayPause);
         skipNextBtn = findViewById(R.id.next);
         skipPreviousBtn = findViewById(R.id.Previous);
@@ -85,6 +86,13 @@ public class MainActivity extends AppCompatActivity {
         playlistes = new ArrayList<Playliste>();
         playlistes.add(new Playliste("Playliste de Benjamin", "1Q6ivYwu0sg0DEwHr92Jtf"));
         playlistes.add(new Playliste("Kompa mix 2023", "0Ws3ZQf1kxoWbWzUy11yW8"));
+        playlistes.add(new Playliste("Kompa HT", "05iajAwuNfjbR0OESaObd04"));
+        playlistes.add(new Playliste("ayiti Clasik", "5cLHNE7qPjDU7WMYfWK84f"));
+        playlistes.add(new Playliste("Gouyad experience", "2fiuw1m0I5EeKQHSkJK44j"));
+        playlistes.add(new Playliste("Haitiano", "0tylu5X3Zhk9iFQWd1qvgX"));
+        playlistes.add(new Playliste("Kompa Ayisyen", "0tylu5X3Zhk9iFQWd1qvgX"));
+
+
 
         instance = Spotify.getInstance(this);
 
@@ -101,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 pause();
-                                playPauseBtn.setImageResource(android.R.drawable.ic_media_play);
+                                playPauseBtn.setImageResource(R.drawable.play_button_img);
                                 isPlaying = false;
                             }
                         }, 500);
@@ -121,48 +129,48 @@ public class MainActivity extends AppCompatActivity {
 
         playliste.setText(playlistes.get(choixPlayliste).nom);
 
-
         Lien.setOnClickListener(source -> {
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.masterclass.com/articles/kompa-music-guide"));
             startActivity(i);
         });
 
-        changePlaylistBtn.setOnClickListener(v -> {
+        changePlaylistBtn.setOnClickListener(source -> {
             Intent i = new Intent(this, ChoisirPlaylistActivity.class);
             lanceur.launch(i);
 
-            // Add the following line to play the first song of the new playlist
-            instance.setCurrentPlaylist("spotify:playlist:" + playlistes.get(choixPlayliste).ChansonId.toString());
+//            instance.setCurrentPlaylist("spotify:playlist:" + playlistes.get(choixPlayliste).ChansonId.toString());
+//            playPauseBtn.setImageResource(R.drawable.pause_button_img);
         });
 
         if (isPlaying){
             playPauseBtn.setImageResource(R.drawable.pause_button_img);
         }
-        playPauseBtn.setOnClickListener(view -> {
-            if(!isPlaying) {
-                chronometer.setBase(SystemClock.elapsedRealtime() + pauseTemps);
+        playPauseBtn.setOnClickListener(source -> {
+            if (!isPlaying) {
+                if (timeWhenStopped == 0) {
+                    chronometer.setBase(SystemClock.elapsedRealtime());
+                } else {
+                    chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                }
                 chronometer.start();
-//
-                playPauseBtn.setImageResource(R.drawable.play_button_img);
-                play(choixPlayliste);
-            } else{
-            chronometer.stop();
-            pauseTemps = chronometer.getBase() - SystemClock.elapsedRealtime();
-//
                 playPauseBtn.setImageResource(R.drawable.pause_button_img);
+                play(choixPlayliste);
+            } else {
+                chronometer.stop();
+                timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
+                playPauseBtn.setImageResource(R.drawable.play_button_img);
                 pause();
             }
-//            play(choixPlayliste);
             isPlaying = !isPlaying;
         });
 
-        skipNextBtn.setOnClickListener(v -> {
+        skipNextBtn.setOnClickListener(source -> {
             instance.next();
             chronometer.setBase(SystemClock.elapsedRealtime());
             playPauseBtn.setImageResource(R.drawable.pause_button_img);
         });
 
-        skipPreviousBtn.setOnClickListener(v -> {
+        skipPreviousBtn.setOnClickListener(source -> {
             instance.previous();
             chronometer.setBase(SystemClock.elapsedRealtime());
             playPauseBtn.setImageResource(R.drawable.pause_button_img);
@@ -209,11 +217,7 @@ public class MainActivity extends AppCompatActivity {
                 TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
                 TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1));
     }
-    public void updateSongPosition(int newPosition) {
-        if (mSpotifyAppRemote != null) {
-            mSpotifyAppRemote.getPlayerApi().seekTo(newPosition);
-        }
-    }
+
     @Override
     protected void onStart() {
 
@@ -281,11 +285,6 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void slide(int pos) {
-        if (mSpotifyAppRemote != null) {
-            mSpotifyAppRemote.getPlayerApi().seekTo(pos);
-        }
-    }
 
     private void update() {
         if(instance.isConnected()) {
@@ -316,7 +315,10 @@ public class MainActivity extends AppCompatActivity {
         currentPlayerState[0] = playerState;
 
         startChronometer();
-        if(isFirstStart) {pause(); isFirstStart = !isFirstStart;}
+        if(isFirstStart) {
+            pause();
+            isFirstStart = !isFirstStart;
+        }
     }
 
     private void startChronometer(){
@@ -332,24 +334,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void play(int choixPlayliste) {
-        startChronometer();
+        if (timeWhenStopped == 0) {
+            chronometer.setBase(SystemClock.elapsedRealtime());
+        }
         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + playlistes.get(choixPlayliste).ChansonId.toString());
     }
 
     private void pause() {
         mSpotifyAppRemote.getPlayerApi().pause();
         stopChronometer();
-    }
-    public long getProgress() {
-
-        return progress;
-    }
-    private void skipNext() {
-        mSpotifyAppRemote.getPlayerApi().skipNext();
-    }
-
-    private void skipPrevious() {
-        mSpotifyAppRemote.getPlayerApi().skipPrevious();
     }
 
     private void fakeOnStart() {
