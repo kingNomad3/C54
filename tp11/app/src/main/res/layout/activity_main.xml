@@ -112,11 +112,25 @@
             app:srcCompat="@drawable/skip_previous_button_img" />
 
         <ImageView
+            android:id="@+id/repeatButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/repeat_button_img" />
+
+        <ImageView
             android:id="@+id/PlayPause"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
             android:layout_weight="1"
             app:srcCompat="@drawable/play_button_img" />
+
+        <ImageView
+            android:id="@+id/shuffleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/shuffle_button_img" />
 
         <ImageView
             android:id="@+id/next"

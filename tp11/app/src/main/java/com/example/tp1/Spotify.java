@@ -17,6 +17,7 @@ public class Spotify {
     private Context context;
 
     private static final String CLIENT_ID = "6aa9f568231047e1945bf21ade475261";
+    private static final String REDIRECT_URI = "com.example.tp1://callback";
     private String currentPlaylist = "spotify:playlist:1Q6ivYwu0sg0DEwHr92Jtf";
     private SpotifyAppRemote mSpotifyAppRemote;
     private PlayerApi playerApi;
@@ -26,9 +27,6 @@ public class Spotify {
     private String currentSongURI;
     private boolean isPlaying;
     private boolean songChanged;
-
-    private static final String REDIRECT_URI = "com.example.tp1://callback";
-
     private String nom;
     private String artiste;
     private Bitmap cover;
@@ -57,19 +55,17 @@ public class Spotify {
                         .showAuthView(true)
                         .build();
 
-        //connect to App Remote
         SpotifyAppRemote.connect(context, connectionParams, new Connector.ConnectionListener() {
             public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
                 playerApi = mSpotifyAppRemote.getPlayerApi();
                 Log.d("Spotify", "Connected to Spotify App Remote");
-                // Now you can start interacting with App Remote
                 connected();
             }
 
             public void onFailure(Throwable throwable) {
                 Log.e("Spotify", "Connection to Spotify App Remote failed: " + throwable.getMessage());
-                // Something went wrong when attempting to connect! Handle errors here
+                // Handle failure, for example, by retrying or showing a message to the user
             }
         });
     }
@@ -93,9 +89,9 @@ public class Spotify {
         }
     }
 
-    //ACTIONS
+
     public void resume() {
-        playerApi.play(currentPlaylist);
+//        playerApi.play(currentPlaylist);
         playerApi.resume();
         isPlaying = true;
     }
@@ -182,42 +178,11 @@ public class Spotify {
         return currentPlaylistIndex;
     }
     public void setCurrentPlaylist(String currentPlaylist) {
-        this.currentPlaylist = currentPlaylist;
+//        this.currentPlaylist = currentPlaylist;
         playerApi.play(currentPlaylist);
         this.update();
     }
 
-    public static Spotify getInstance() {
-        return instance;
-    }
-
-    public static void setInstance(Spotify instance) {
-        Spotify.instance = instance;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getArtiste() {
-        return artiste;
-    }
-
-    public void setArtiste(String artiste) {
-        this.artiste = artiste;
-    }
-
-    public Bitmap getCover() {
-        return cover;
-    }
-
-    public void setCover(Bitmap cover) {
-        this.cover = cover;
-    }
 }
 
 

@@ -26,6 +26,7 @@ import com.spotify.protocol.types.PlayerState;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -33,8 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
-    //je sais qu'avoir Client ID et URI dans mon instance et dans mon main est une mauvaise pratice, mais si je ne le fais pas de cette maniere
-    // les albumes vont parraitre avec un decalage
+    // Je sais qu'avoir Client ID et URI dans mon instance et dans mon main est une mauvaise pratique,
+    // mais si je ne le fais pas de cette manière, les albums vont paraître avec un décalage
     private static final String CLIENT_ID = "6aa9f568231047e1945bf21ade475261";
     private static final String REDIRECT_URI = "com.example.tp1://callback";
 
@@ -45,14 +46,13 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Playliste> playlistes;
     private static Spotify instanceSpotify;
     TextView playliste,nomChanson,nomArtiste,tempsTxt;
-    ImageView albumCover, Lien, changePlaylistBtn, playPauseBtn, skipNextBtn, skipPreviousBtn;
+    ImageView albumCover, Lien, changePlaylistBtn, playPauseBtn, skipNextBtn, skipPreviousBtn, shuffleBtn, repeatBtn;
     SeekBar tempsSeekBar;
     Chronometer chronometer;
     Boolean isFirstStart;
     long timeWhenStopped;
-    long progress;
     int choixPlayliste;
-    private long pauseTemps = 0;
+
 
 
     @SuppressLint("MissingInflatedId")
@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialisation des éléments de l'interface utilisateur
         playliste = findViewById(R.id.Playliste);
         nomChanson = findViewById(R.id.nomChanson);
         nomArtiste = findViewById(R.id.nomArtiste);
@@ -69,21 +70,20 @@ public class MainActivity extends AppCompatActivity {
         playPauseBtn = findViewById(R.id.PlayPause);
         skipNextBtn = findViewById(R.id.next);
         skipPreviousBtn = findViewById(R.id.Previous);
+        shuffleBtn = findViewById(R.id.shuffleButton);
+        repeatBtn = findViewById(R.id.repeatButton);
         tempsSeekBar = findViewById(R.id.progressBar);
         chronometer = findViewById(R.id.chronometer);
         tempsTxt = findViewById(R.id.tempsTxt);
 
+        // Initialisation de l'instance Spotify
         instanceSpotify = Spotify.getInstance(this);
 
-
-        isFirstStart = true;
-        timeWhenStopped = 0;
-        choixPlayliste = 0;
-
+        // Configuration de la couleur de la barre de progression
         tempsSeekBar.getProgressDrawable().setColorFilter(
                 Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
 
-        // playlists
+        // Initialisation des playlists
         playlistes = new ArrayList<Playliste>();
         playlistes.add(new Playliste("Playliste de Benjamin", "1Q6ivYwu0sg0DEwHr92Jtf"));
         playlistes.add(new Playliste("Kompa mix 2023", "0Ws3ZQf1kxoWbWzUy11yW8"));
@@ -94,10 +94,11 @@ public class MainActivity extends AppCompatActivity {
         playlistes.add(new Playliste("Kompa Ayisyen", "12iEmuhY344vOIlqVFEwhV"));
 
 
+        isFirstStart = true;
+        timeWhenStopped = 0;
+        choixPlayliste = 0;
 
-
-
-
+        // Initialisation du lanceur d'activités
         lanceur = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -106,25 +107,37 @@ public class MainActivity extends AppCompatActivity {
                         serealization();
                         playliste.setText(playlistes.get(choixPlayliste).nom);
 
+                        // Pause Spotify avec un délai pour éviter des problèmes de mise à jour
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 instanceSpotify.pause();
+                                stopChronometer();
+                                tempsTxt.setText(millisToTime(instanceSpotify.getLenght()));
                             }
                         }, 500);
                     }
                 }
         );
 
+        // Restauration de la playliste sélectionnée depuis la sérialisation
+        FileInputStream fis = null;
         try {
-            FileInputStream fis = openFileInput("choixPlayliste.ser");
-            ObjectInputStream ois  = new ObjectInputStream(fis);
-            choixPlayliste = (int)ois.readObject();
-
+            fis = openFileInput("choixPlayliste.ser");
+            // Read or perform operations with the file
         } catch (Exception e) {
-            serealization();
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
+        // Gestion du clic sur le lien
         playliste.setText(playlistes.get(choixPlayliste).nom);
 
         Lien.setOnClickListener(source -> {
@@ -132,39 +145,47 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         });
 
+        // Gestion du changement de playliste
         changePlaylistBtn.setOnClickListener(source -> {
             Intent i = new Intent(this, ChoisirPlaylistActivity.class);
             lanceur.launch(i);
 
-//            playPauseBtn.setImageResource(R.drawable.pause_button_img);
         });
 
-
+        // Gestion du clic sur le bouton play/pause
         playPauseBtn.setOnClickListener(source -> {
             if (instanceSpotify.isPlaying()) {
                 chronometer.stop();
                 timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
                 playPauseBtn.setImageResource(R.drawable.play_button_img);
                 instanceSpotify.pause();
+                stopChronometer();
             } else {
                 chronometer.start();
                 playPauseBtn.setImageResource(R.drawable.pause_button_img);
-                instanceSpotify.resume();
+                if(!isFirstStart) {
+                    instanceSpotify.resume();
+                }else {
+                    instanceSpotify.play();
+                }
             }
         });
 
+        // Gestion du clic sur le bouton suivant
         skipNextBtn.setOnClickListener(source -> {
             instanceSpotify.next();
             chronometer.setBase(SystemClock.elapsedRealtime());
             playPauseBtn.setImageResource(R.drawable.pause_button_img);
         });
 
+        // Gestion du clic sur le bouton précédent
         skipPreviousBtn.setOnClickListener(source -> {
             instanceSpotify.previous();
             chronometer.setBase(SystemClock.elapsedRealtime());
             playPauseBtn.setImageResource(R.drawable.pause_button_img);
         });
 
+        // Gestion de la mise à jour du chronomètre
         chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
@@ -174,6 +195,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Gestion du clic sur le bouton de mélange
+        shuffleBtn.setOnClickListener(source ->{
+            instanceSpotify.toggleShuffle();
+        });
+
+        // Gestion du clic sur le bouton de répétition
+        repeatBtn.setOnClickListener(source ->{
+            instanceSpotify.toggleRepeat();
+        });
+
+
+        // Gestion de la position de la barre de progression
         tempsSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -186,6 +219,8 @@ public class MainActivity extends AppCompatActivity {
             public void onStartTrackingTouch(SeekBar seekBar) {}
         });
     }
+
+    // Gestion du résultat de l'activité de choix de playliste
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -193,13 +228,16 @@ public class MainActivity extends AppCompatActivity {
         if ( resultCode == RESULT_OK) {
             choixPlayliste = data.getIntExtra("choixPlayliste", -1);
 
-            // Check if the selected playlist is different from the current one
+
             if (choixPlayliste != instanceSpotify.getCurrentPlaylistIndex()) {
-                // Start playing the first song of the new playlist
+
                 instanceSpotify.setCurrentPlaylist("spotify:playlist:" + playlistes.get(choixPlayliste).ChansonId.toString());
             }
         }
     }
+
+    // Conversion de millisecondes en format heure:minute
+    //https://stackoverflow.com/questions/9027317/how-to-convert-milliseconds-to-hhmmss-format
     private String millisToTime(long millis) {
         return String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
@@ -215,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
                         .setRedirectUri(REDIRECT_URI)
                         .showAuthView(true)
                         .build();
-
+        // Connexion à Spotify
         SpotifyAppRemote.connect(this, connectionParams,
                 new Connector.ConnectionListener() {
                     public void onConnected(SpotifyAppRemote spotifyAppRemote) {
@@ -235,6 +273,8 @@ public class MainActivity extends AppCompatActivity {
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
 
+
+    // Méthode de sérialisation
     private void serealization(){
         ObjectOutputStream oos = null;
         try {
@@ -254,7 +294,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Méthode de connexion à Spotify
     private void connect() {
+        // Abonnement aux mises à jour de l'état du lecteur Spotify
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
                 .setEventCallback(playerState -> {
@@ -262,10 +304,9 @@ public class MainActivity extends AppCompatActivity {
 
                     if (currentPlayerState[0] == null ||
                             !playerState.track.uri.equals(currentPlayerState[0].track.uri))
-                        updateSong(playerState);
+                        updateChanson(playerState);
                 });
-
-        // Initialize playerApi
+        // Abonnement aux mises à jour de l'état du lecteur Spotify (sans traitement)
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
                 .setEventCallback(playerState -> {
@@ -273,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-
+    // Méthode de mise à jour de l'interface utilisateur
     private void update() {
         if(instanceSpotify.isConnected()) {
             instanceSpotify.update();
@@ -288,11 +329,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateSong(PlayerState playerState){
+    // Méthode de mise à jour des informations sur la chanson en cours
+    private void updateChanson(PlayerState playerState){
         mSpotifyAppRemote.getImagesApi()
                 .getImage(playerState.track.imageUri)
                 .setResultCallback(bitmap -> {
                     albumCover.setImageBitmap(bitmap);
+                    tempsSeekBar.setMax((int) instanceSpotify.getLenght());
+                    chronometer.setBase(SystemClock.elapsedRealtime());
                 });
         nomChanson.setText(playerState.track.name);
         nomArtiste.setText(playerState.track.artist.name);
@@ -303,25 +347,26 @@ public class MainActivity extends AppCompatActivity {
         startChronometer();
         if(isFirstStart) {
             instanceSpotify.pause();
+            stopChronometer();
             isFirstStart = !isFirstStart;
         }
     }
 
+    // Méthode de démarrage du chronomètre
     private void startChronometer(){
         long songDuration = currentPlayerState[0].track.duration;
         chronometer.setBase(SystemClock.elapsedRealtime() + songDuration - timeWhenStopped);
         chronometer.start();
     }
 
+    // Méthode d'arrêt du chronomètre
     private void stopChronometer(){
         long songDuration = currentPlayerState[0].track.duration;
         timeWhenStopped = SystemClock.elapsedRealtime() + songDuration - chronometer.getBase() ;
         chronometer.stop();
     }
 
-
-
-
+    // Méthode pour simuler le démarrage lorsqu'il n'y a pas de lecture en cours
     private void fakeOnStart() {
         tempsSeekBar.setMax((int) instanceSpotify.getLenght());
         chronometer.setBase(SystemClock.elapsedRealtime() - instanceSpotify.getProgress());

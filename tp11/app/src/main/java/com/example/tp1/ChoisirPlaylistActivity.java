@@ -18,7 +18,7 @@ public class ChoisirPlaylistActivity extends AppCompatActivity {
 
     ListView liste;
     SimpleAdapter adapter;
-    List<Map<String, ?>> playlistes;  // Change the type to List<Map<String, ?>>
+    List<Map<String, ?>> playlistes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class ChoisirPlaylistActivity extends AppCompatActivity {
 
     }
 
-    // Helper method to create Map entries for Playliste objects
+
     private Map<String, String> createPlaylistMap(String playlistName, String playlistId) {
         Map<String, String> playlistMap = new HashMap<>();
         playlistMap.put("playlistName", playlistName);
