@@ -4,7 +4,48 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="503f7360-d645-4903-adf9-888d6fdd01db" name="Changes" comment="" />
+    <list default="true" id="503f7360-d645-4903-adf9-888d6fdd01db" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../exam2/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/proguard-rules.pro" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/androidTest/java/com/example/exam2/ExampleInstrumentedTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/java/com/example/exam2/MainActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/drawable/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/drawable/ic_launcher_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-anydpi-v33/ic_launcher.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-hdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-mdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-xhdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/raw/coordonnees.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/values-night/themes.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/values/colors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/values/themes.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/xml/backup_rules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/main/res/xml/data_extraction_rules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/app/src/test/java/com/example/exam2/ExampleUnitTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/gradlew" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/gradlew.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../exam2/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tp11/app/src/main/java/com/example/tp1/ChoisirPlaylistActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../tp11/app/src/main/java/com/example/tp1/ChoisirPlaylistActivity.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -34,7 +75,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "cidr.known.project.marker": "true",
-    "last_opened_file_path": "C:/Users/1662413/Desktop/C54/annex1b"
+    "last_opened_file_path": "C:/Users/1662413/Desktop/C54/annex1"
   }
 }]]></component>
   <component name="RunManager">

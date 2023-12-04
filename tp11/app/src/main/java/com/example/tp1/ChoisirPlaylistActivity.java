@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 public class ChoisirPlaylistActivity extends AppCompatActivity {
 
@@ -25,7 +26,7 @@ public class ChoisirPlaylistActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choisir_playlist);
 
-        playlistes = new ArrayList<>();
+        playlistes = new Vector<>();
 
         playlistes.add(createPlaylistMap("Playliste de Benjamin", "1Q6ivYwu0sg0DEwHr92Jtf"));
         playlistes.add(createPlaylistMap("Kompa mix 2023", "0Ws3ZQf1kxoWbWzUy11yW8"));
